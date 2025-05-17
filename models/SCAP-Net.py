@@ -18,7 +18,7 @@ from mmengine.logging import MMLogger
 import torch.nn as nn
 from einops.layers.torch import Rearrange
 
-from tools import RCA, CAB, PVM, PVMLayer, DSDC
+from tools import RCA, CAB, PVM, PVMLayer, MCPM
 
 
 
@@ -30,7 +30,7 @@ from tools import RCA, CAB, PVM, PVMLayer, DSDC
 
 
 
-class SCAPNet(nn.Module):
+class SCMCNet(nn.Module):
     
     def __init__(self, num_classes=1, input_channels=3, c_list=[8,16,24,32,48,64],
                 split_att='fc', bridge=True):
@@ -48,21 +48,20 @@ class SCAPNet(nn.Module):
             nn.Conv2d(c_list[1], c_list[2], 3, stride=1, padding=1),
         )
         self.encoder4 = nn.Sequential(
-            DSDC(c_list[2]),
+            MCPM(c_list[2]),
             PVMLayer(input_dim=c_list[2], output_dim=c_list[3])
         )
         self.encoder5 = nn.Sequential(
-            DSDC(c_list[3]),
+            MCPM(c_list[3]),
             PVMLayer(input_dim=c_list[3], output_dim=c_list[4])
         )
         self.encoder6 = nn.Sequential(
-            DSDC(c_list[4]),
+            MCPM(c_list[4]),
             PVMLayer(input_dim=c_list[4], output_dim=c_list[5])
         )
 
         if bridge: 
-            self.scab = SC_Att_Bridge(c_list, split_att)
-            print('SC_Att_Bridge was used')
+            self.cab = CAB(c_list, split_att)
 
         self.rca_1=RCA(dim=c_list[0])
         self.rca_2=RCA(dim=c_list[1])
@@ -72,15 +71,15 @@ class SCAPNet(nn.Module):
 
         
         self.decoder1 = nn.Sequential(
-            DSDC(c_list[5]),
+            MCPM(c_list[5]),
             PVMLayer(input_dim=c_list[5], output_dim=c_list[4])
         ) 
         self.decoder2 = nn.Sequential(
-            DSDC(c_list[4]),
+            MCPM(c_list[4]),
             PVMLayer(input_dim=c_list[4], output_dim=c_list[3])
         ) 
         self.decoder3 = nn.Sequential(
-            DSDC(c_list[3]),
+            MCPM(c_list[3]),
             PVMLayer(input_dim=c_list[3], output_dim=c_list[2])
         )  
         self.decoder4 = nn.Sequential(
