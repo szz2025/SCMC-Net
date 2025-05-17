@@ -87,7 +87,7 @@ python test.py
 The performance of the proposed method is compared with the state-of-the-art models on the ISIC2017, ISIC2018, and $\text{PH}^2$ datasets, with the top two results highlighted in red and blue, respectively.
 
 <div align="center">
-<img src="Figs/table1.png" />
+<img src="C:\Users\szz\Desktop\SCMC-NET.png" />
 </div>
 
 
